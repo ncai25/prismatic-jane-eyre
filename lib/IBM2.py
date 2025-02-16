@@ -167,7 +167,7 @@ class IBM2():
 		Initialization with uniform probabilities.
 		"""
 		print("Initializing jump")
-		self.jump = 1. / (2 * self.max_jump) * np.ones((1, 2 * self.max_jump), dtype = np.float)
+		self.jump = 1. / (2 * self.max_jump) * np.ones((1, 2 * self.max_jump), dtype = float)
 
 	def update_jump(self, c_jump):
 		"""
@@ -201,13 +201,13 @@ class IBM2():
 		"""
 		Run one epoch of EM on self.english and self.french.
 		"""
-		c_ef = np.zeros(self.t.shape, dtype=np.float)
-		c_e = np.zeros((1, self.V_e_size), dtype=np.float)
+		c_ef = np.zeros(self.t.shape, dtype=float)
+		c_e = np.zeros((1, self.V_e_size), dtype=float)
 
-		c_jump = np.zeros((1, 2 * self.max_jump), dtype=np.float)
+		c_jump = np.zeros((1, 2 * self.max_jump), dtype=float)
 
-		bar = progressbar.ProgressBar(max_value = len(self.english))
-		
+		bar = progressbar.ProgressBar(maxval = len(self.english))
+		bar.start()
 		# Iterate over all sentence pairs.
 		for k, (E, F) in enumerate(zip(self.english, self.french)):
 
@@ -370,10 +370,10 @@ class IBM2():
 		f = open(path + 'transition-probs.pkl', 'rb')
 		nonzero = pickle.load(f)
 		f.close()
-		self.t = np.zeros((self.V_f_size, self.V_e_size), dtype = np.float)
+		self.t = np.zeros((self.V_f_size, self.V_e_size), dtype = float)
 		print('Loading t')
-		bar = progressbar.ProgressBar(max_value=len(list(nonzero)))
-
+		bar = progressbar.ProgressBar(maxval=len(list(nonzero)))
+		bar.start()
 		for k, (i,j,v) in enumerate(nonzero):
 			bar.update(k)
 			self.t[i,j] = v

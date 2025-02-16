@@ -150,10 +150,11 @@ class IBM1():
 		Run one epoch of EM on self.english and self.french.
 		"""
 
-		c_ef = np.zeros(self.t.shape, dtype=np.float)
-		c_e = np.zeros((1, self.V_e_size), dtype=np.float)
+		c_ef = np.zeros(self.t.shape, dtype=float)
+		c_e = np.zeros((1, self.V_e_size), dtype=float)
 
-		bar = progressbar.ProgressBar(max_value=len(self.english))
+		bar = progressbar.ProgressBar(maxval=len(self.english))
+		bar.start() 
 
 		# Iterate over all sentence pairs.
 		for k, (E, F) in enumerate(zip(self.english, self.french)):
@@ -391,7 +392,7 @@ class IBM1():
 		"""
 		return self.t[f, E_indices] / np.sum(self.t[f, E_indices])
 
-	def align(self, F, E):
+	def align(self, F, E, return_pairs=False):
 		"""
 		F is French sentence with words (not indices)
 		E is English sentence with words (not indices)
@@ -415,11 +416,16 @@ class IBM1():
 			E_indices.append(i)
 
 		alignment = []
-		for f in F_indices:
+		word_pairs = []
+
+		for idx, f in enumerate(F_indices):
 			p = self.posterior(f, E_indices)
 			a_f = np.argmax(p)
 			alignment.append(a_f)
-				
+			word_pairs.append((F[idx], E[a_f]))
+		if return_pairs:
+			return alignment, word_pairs 
+
 		return alignment
 
 	def predict_alignment(self, french_testpath, english_testpath, outpath):
