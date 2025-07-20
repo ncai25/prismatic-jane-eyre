@@ -1,7 +1,6 @@
 from lib.util import read_list
 import matplotlib.pyplot as plt
 
-
 path = 'prediction/validation/IBM1/VI/VALIDATION/'
 
 savepath = path
