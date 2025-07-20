@@ -6,6 +6,7 @@ import numpy as np
 
 
 def main():
+
     ibm = IBM1()
 
     english_path = 'jane-eyre/Fr_all.e'
@@ -15,7 +16,7 @@ def main():
 
     Save = True
 
-    T = 14  # Number of training iterations
+    T = 14  
     aers = []
 
     for step in range(T):
@@ -26,15 +27,12 @@ def main():
         model_path = 'jane-eyre/models/IBM1/EM/{0}-'.format(step + 1)
         alignment_path = save_path + 'prediction-{0}'.format(step + 1)
 
-        # Run EM step
         ibm.epoch(log=True)
 
-        # Predict alignments
         ibm.predict_alignment('validation/dev.f',
                               'validation/dev.e',
                               alignment_path)
 
-        # Calculate AER
         aer = test('validation/dev.wa.nonullalign',
                    alignment_path)
 
@@ -57,18 +55,6 @@ def main():
 
         # Save total NULL alignments
         write_list(ibm.null_generations, save_path + 'NULL-generations')
-
-    # ✅ FINAL STEP: Extract Final Alignment Pairs After Training
-    # final_alignment_output = save_path + 'final_alignment_pairs.txt'
-
-    # with open(final_alignment_output, 'w') as out_file:
-    #     for F, E in zip(ibm.french, ibm.english):
-    #         _, word_pairs = ibm.align(F, E, return_pairs=True)  # Extract word pairs
-    #         for f_word, e_word in word_pairs:
-    #             out_file.write(f"{f_word} --> {e_word}\n")
-    #         out_file.write("\n")  # Separate sentences
-
-    # print(f"Final alignment pairs saved to {final_alignment_output}")
 
 if __name__ == "__main__":
     main()
