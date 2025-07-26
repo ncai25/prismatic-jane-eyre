@@ -1,19 +1,67 @@
-# IBM-Models
-Implementation of the alignment models IBM 1 and IBM 2 for the UvA course [NLP2](https://uva-slpl.github.io/nlp2/). Parameter estimation is performed using EM for the regular formulation of IBM 1 and 2, and Variational Inference for a Bayesian Formulation of IBM1. Joint work with [Fije van Overeem](https://github.com/Fije) and [Tim van Elsloo](https://github.com/elslooo).
+# Prismatic Jane Eyre - IBM Translation Models
 
-See the [project description](project1.pdf) for more details, and the [final report](report/final-report.pdf) for our findings.
+This project applies IBM Models 1 and 2 to analyze translations of Charlotte Brontë's *Jane Eyre* across multiple languages, focusing on how key words and phrases evolve across different translations.
 
-## Alignments
-See how the alignments change over 10 epochs of training. The width of each line is proportional to its probability, and we start with uniform alignment probabilities:
+## Project Overview
 
-![sents0-4](sents/loaded/IBM2/uniform/sents-movie.gif)
+Using statistical word alignment models, this project examines French and Italian translations of *Jane Eyre* to trace how specific words and their contexts change across different translators and time periods. The goal is to provide computational support for literary translation analysis.
 
-These predictions are from an IBM model 2 running for 10 epochs, where each epoch is over the full 250k sentence dataset. We can see that the model predicts a perfect alignment at epoch 4. After this, the model unfortunately starts to wrongly align *le* to *has* instead of to the correct *the*.
+## Data
 
-The code is to produce these drawings is found in [util](lib/util.py). It was taken and adapted from a notebook in [this repository](https://github.com/INFR11133/lab1).
+The Jane Eyre translation corpus includes:
+- Multiple French translations (1854-2008)
+- Multiple Italian translations (1904-2014)
+- Aligned sentence pairs between English source and translations
+
+## Implementation
+
+### IBM Models
+This implementation builds upon code from [IBM-Models by daandouwe](https://github.com/daandouwe/IBM-Models), originally developed for the UvA NLP2 course. The models have been adapted for literary text analysis.
+
+### Key Features
+- IBM Model 1 and 2 implementation with EM parameter estimation
+- Word pair extraction with probability thresholds
+- Context extraction for translation analysis
+- Visualization of alignment probabilities
+
+## Usage
+
+### Training IBM Model 1
+```bash
+python run-ibm1.py
+```
+
+### Training IBM Model 2 
+```bash
+python run-ibm2.py
+```
+
+### Extracting Word Contexts
+```bash
+python extract_word_contexts.py
+```
+
+## Acknowledgments
+
+- **IBM Model Implementation**: Based on code from [daandouwe/IBM-Models](https://github.com/daandouwe/IBM-Models)
+  - Original authors: Daan van Stigt, Fije van Overeem, and Tim van Elsloo
+  - Adapted for literary translation analysis
+  
+- **Sentence Alignment**: Using [bleualign](https://github.com/rsennrich/Bleualign) for preprocessing
+  - Sennrich, Rico and Martin Volk (2010): MT-based Sentence Alignment for OCR-generated Parallel Texts
 
 ## Requirements
 ```
+pip install numpy
+pip install matplotlib
 pip install tabulate
 pip install progressbar2
 ```
+
+## License
+[Specify your license]
+
+## Citation
+If using this code for research, please cite:
+- Original IBM Models: Brown et al. (1993)
+- This implementation: [Your citation]

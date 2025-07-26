@@ -1,10 +1,9 @@
-/jane-eyre/texts
 /jane-eyre/models
-/jane-eyre/original_texts
 /jane-eyre/french
 /jane-eyre/italian
-/jane-eyre/full_texts
+/jane-eyre/raw_data
 /jane-eyre/.DS_Store
-/prediction/.DS_Store
-/prediction/test/.DS_Store
+/jane-eyre/prediction/.DS_Store
+/jane-eyre/prediction/test/
 .DS_Store
+/original
