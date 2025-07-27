@@ -1,17 +1,16 @@
 import numpy as np
-from collections import Counter, defaultdict
+from collections import Counter 
 import matplotlib.pyplot as plt
 import progressbar
 from tabulate import tabulate
 import pickle
 from scipy.special import digamma, loggamma
 
-
 class IBM1():
 
 	def __init__(self):
-		self.english = []  			# all sentences in the english text [[]]
-		self.french = []  			# all sentences in the french text type [[]]
+		self.english = []  			# all sentences in the english text [[]] 
+		self.french = []  			# all sentences in the french text type [[]]  
 		self.V_e = set()  			# english vocabulary
 		self.V_f = set()  			# french vocabulary
 		self.V_e_indices = dict()  	# word -> index dictionary
@@ -46,11 +45,11 @@ class IBM1():
 			sent = line.split()
 			if self.null:
 				# if we use NULL words we prepend all sentences with NULL
-				sent = ['-NULL-'] + sent 
+				sent = ['-NULL-'] + sent
 			self.english.append(sent)
 			self.V_e.update(sent)  # add words to vocabulary
 		if UNK:	
-			self.fix_english_UNKs(10)
+			self.fix_english_UNKs(50)
 		self.V_e_size = len(self.V_e)
 		e.close()
 
@@ -63,7 +62,7 @@ class IBM1():
 			self.french.append(sent)
 			self.V_f.update(sent)  # add words to vocabulary	
 		if UNK:	
-			self.fix_french_UNKs(10)
+			self.fix_french_UNKs(50)
 		self.V_f_size = len(self.V_f)
 		f.close()
 

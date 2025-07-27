@@ -2,9 +2,10 @@
 /jane-eyre/french
 /jane-eyre/italian
 /jane-eyre/raw_data
-/jane-eyre/.DS_Store
-/jane-eyre/prediction/.DS_Store
-/jane-eyre/prediction/test/
+/jane_eyre/abandoned_scripts
+/jane-eyre/prediction/
 .DS_Store
 /original
 **/.DS_Store
+/Bleualign
+/jane-eyre/word_pairs

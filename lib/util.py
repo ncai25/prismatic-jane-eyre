@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from itertools import accumulate
 from collections import defaultdict
 import numpy as np
+import json
+import os
 
 def write_list(aer, path):
 	f = open(path, 'w')
@@ -402,4 +404,125 @@ def get_coordinates(bitext, draw_all=False, one_sent=False, sent_index=0, word_i
 			'y_f': y_positions_f, 'y_e': y_positions_e,
 			'edges': edge_pos, 'w_f': words_f, 'w_e': words_e}
 	return coord_dict
+
+
+def save_word_pairs(ibm_model, word_pair_path, epoch_num):
+	"""
+	Extract and save word pairs from IBM model with normalized structure.
+	
+	Args:
+		ibm_model: IBM1 or IBM2 model instance
+		word_pair_path: Directory path to save word pairs
+		epoch_num: Current epoch number
+	"""
+	os.makedirs(word_pair_path, exist_ok=True)
+	word_pair_path_json = word_pair_path + f'word_pairs_epoch_{epoch_num}.json'
+	
+	def normalize_word(word):
+		word = word.lower().strip('-!?.,;:""\'_★…')
+		if '--' in word:
+			word = word.split('--')[0].strip('!?.,;:""\'_★…')
+		return word
+	
+	all_word_pairs = []
+	for sent_idx, (F, E) in enumerate(zip(ibm_model.french, ibm_model.english)):
+		# Check if this is IBM1 (has return_pairs parameter) or IBM2
+		if 'IBM1' in ibm_model.__class__.__name__:
+			alignment, pairs = ibm_model.align(F, E, return_pairs=True)
+		else:
+			# IBM2 - create pairs manually
+			alignment = ibm_model.align(F, E)
+			pairs = [(F[idx], E[alignment[idx]]) for idx in range(len(F))]
+		
+		for word_idx, (f_word, e_word) in enumerate(pairs):
+			f_index = ibm_model.V_f_indices.get(f_word, ibm_model.V_f_indices.get("-UNK-", 0))
+			e_index = ibm_model.V_e_indices.get(e_word, ibm_model.V_e_indices.get("-UNK-", 0))
+			prob = ibm_model.t[f_index, e_index]
+			
+			# only keep word pairs with sufficient probability
+			if prob > 0.0001:
+				fr_norm = normalize_word(f_word)
+				en_norm = normalize_word(e_word)
+				
+				if not fr_norm or not en_norm:
+					continue
+				
+				# adjust English position for NULL word
+				eng_pos = int(alignment[word_idx])
+				if ibm_model.null and eng_pos > 0:
+					eng_pos -= 1
+				
+				all_word_pairs.append({
+					'french_word': f_word,
+					'english_word': e_word,
+					'french_normalized': fr_norm,
+					'english_normalized': en_norm,
+					'prob': prob,
+					'sent_index': sent_idx,
+					'french_pos': word_idx,
+					'english_pos': eng_pos
+				})
+	
+	# group word pairs by normalized English word, then by French word
+	english_groups = defaultdict(lambda: defaultdict(list))
+	
+	for pair in all_word_pairs:
+		eng_norm = pair['english_normalized']
+		fr_norm = pair['french_normalized']
+		
+		occurrence = {
+			'french_form': pair['french_word'],
+			'english_form': pair['english_word'],
+			'sent_index': pair['sent_index'],
+			'french_pos': pair['french_pos'],
+			'english_pos': pair['english_pos'],
+			'prob': round(pair['prob'], 4)
+		}
+		
+		english_groups[eng_norm][fr_norm].append(occurrence)
+	
+	# build final JSON structure with sorted French translations
+	final_structure = {}
+	for eng_word, french_translations in english_groups.items():
+		
+		french_with_avg_prob = []
+		for fr_word, occurrences in french_translations.items():
+			probs = [occ['prob'] for occ in occurrences]
+			avg_prob = sum(probs) / len(probs)
+			
+			french_with_avg_prob.append({
+				'word': fr_word,
+				'avg_prob': avg_prob,
+				'total_count': len(occurrences),
+				'occurrences': occurrences
+			})
+		
+		# sort by average probability, then by total count
+		french_with_avg_prob.sort(key=lambda x: (x['avg_prob'], x['total_count']), reverse=True)
+		
+		french_trans_dict = {}
+		for translation in french_with_avg_prob:
+			french_trans_dict[translation['word']] = {
+				'avg_prob': round(translation['avg_prob'], 4),
+				'total_count': translation['total_count'],
+				'occurrences': translation['occurrences']
+			}
+		
+		final_structure[eng_word] = {
+			'total_translation_count': len(french_translations),
+			'french_translations': french_trans_dict
+		}
+	
+	with open(word_pair_path_json, 'w', encoding='utf-8') as jsonfile:
+		json.dump(final_structure, jsonfile, ensure_ascii=False, indent=2)
+	
+	total_english_words = len(english_groups)
+	total_unique_pairs = sum(len(ft) for ft in english_groups.values())
+	total_occurrences = len(all_word_pairs)
+	
+	return {
+		'english_words': total_english_words,
+		'unique_pairs': total_unique_pairs,
+		'total_occurrences': total_occurrences
+	}
 

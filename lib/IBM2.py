@@ -1,12 +1,11 @@
 import numpy as np
-from collections import Counter, defaultdict
+from collections import Counter 
 import matplotlib.pyplot as plt
 import progressbar
 from tabulate import tabulate
 import pickle
 from math import floor
 from numpy.random import dirichlet
-
 
 class IBM2():
 
@@ -52,7 +51,7 @@ class IBM2():
 			self.english.append(sent)
 			self.V_e.update(sent)  # add words to vocabulary
 		if UNK:	
-			self.fix_english_UNKs(10)
+			self.fix_english_UNKs(50)
 		self.V_e_size = len(self.V_e)
 		e.close()
 
@@ -65,7 +64,7 @@ class IBM2():
 			self.french.append(sent)
 			self.V_f.update(sent)  # add words to vocabulary	
 		if UNK:	
-			self.fix_french_UNKs(10)
+			self.fix_french_UNKs(50)
 		self.V_f_size = len(self.V_f)
 		f.close()
 
