@@ -35,7 +35,6 @@ def main():
     if Save:
         write_list(ibm.likelihoods, save_path + 'likelihoods')
         ibm.plot_likelihoods(save_path + 'log-likelihood.pdf')
-        write_list(ibm.null_generations, save_path + 'NULL-generations')
 
 if __name__ == "__main__":
     main()
