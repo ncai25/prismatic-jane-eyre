@@ -6,8 +6,8 @@ def main():
 
     ibm = IBM1()
 
-    english_path = 'jane-eyre/Fr_1966_Monod_aligned-s'
-    french_path = 'jane-eyre/Fr_1966_Monod_aligned-t'
+    english_path = 'jane-eyre/french/fr_combined_aligned.e'
+    french_path = 'jane-eyre/french/fr_combined_aligned.f'
 
     ibm.read_data(english_path, french_path, null=True, UNK=True, max_sents=np.inf, test_repr=False)
 
@@ -18,7 +18,7 @@ def main():
     for step in range(T):
         print('Iteration {}'.format(step + 1))
 
-        save_path = 'jane-eyre/prediction/validation/IBM1/EM/'
+        save_path = 'jane-eyre/likelihoods/IBM1/EM/'
         model_path = 'jane-eyre/models/IBM1/EM/{0}-'.format(step + 1)
         word_pair_path = 'jane-eyre/word_pairs/IBM1/'
 

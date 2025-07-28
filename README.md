@@ -54,6 +54,8 @@ python extract_word_contexts.py
   - Adapted for literary translation analysis
 - **Sentence Alignment**: Using [bleualign](https://github.com/rsennrich/Bleualign) for preprocessing
   - Sennrich, Rico and Martin Volk (2010): MT-based Sentence Alignment for OCR-generated Parallel Texts
+  - Script I used:
+  ```python  bleualign/bleualign.py -s jane-eyre/french/Fr_1964_Maurat.e -t jane-eyre/french/Fr_1964_Maurat.f -o Fr_1964_Maurat_aligned --galechurch --srctotarget```
 
 ## Requirements
 

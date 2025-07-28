@@ -8,11 +8,11 @@ def main():
 
 	ibm = IBM2()
 
-	english_path = 'jane-eyre/Fr_1966_Monod_aligned-s'
-	french_path = 'jane-eyre/Fr_1966_Monod_aligned-t'
+	english_path = 'jane-eyre/french/fr_combined_aligned.e'
+	french_path = 'jane-eyre/french/fr_combined_aligned.f'
 
 	ibm.read_data(english_path, french_path, null=True,  UNK=True, max_sents=np.inf, random_init=False, test_repr=False)
-	ibm.load_t('jane-eyre/models/IBM1/EM/15-')
+	ibm.load_t('jane-eyre/models/IBM1/EM/20-')
 
 	print(np.sum(ibm.t))
 
@@ -24,7 +24,7 @@ def main():
 		
 		print('Iteration {}'.format(step+1))
 
-		save_path 		= 'jane-eyre/prediction/validation/IBM2/pretrained-init/'
+		save_path 		= 'jane-eyre/likelihoods/IBM2/pretrained-init/'
 		model_path 		= 'jane-eyre/models/IBM2/pretrained-init/{0}-'.format(step+1)
 		word_pair_path = 'jane-eyre/word_pairs/IBM2/'
 		
