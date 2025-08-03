@@ -471,8 +471,8 @@ def save_word_pairs(ibm_model, word_pair_path, epoch_num):
 		fr_norm = pair['french_normalized']
 		
 		occurrence = {
-			'french_form': pair['french_word'],
-			'english_form': pair['english_word'],
+			# 'french_form': pair['french_word'],
+			# 'english_form': pair['english_word'],
 			'sent_index': pair['sent_index'],
 			'french_pos': pair['french_pos'],
 			'english_pos': pair['english_pos'],

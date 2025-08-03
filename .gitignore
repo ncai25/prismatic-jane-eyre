@@ -8,4 +8,7 @@
 /original
 **/.DS_Store
 /jane-eyre/word_pairs
-/bleualign
+/vecalign
+fr_data/embed
+fr_data/outputs
+fr_data/overlaps

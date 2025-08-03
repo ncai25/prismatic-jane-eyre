@@ -29,19 +29,73 @@ This implementation builds upon code from [IBM-Models by daandouwe](https://gith
 
 ## Usage
 
-### Training IBM Model 1
+### Preprocessing Pipeline
+
+#### 1. Sentence Segmentation
+
+Normalize texts and ensure consistent sentence segmentation across different translation versions:
+
+```bash
+python sent_segmenter.py --batch seg_texts/
+```
+
+#### 2. Generate Overlapping Sentences
+
+Create overlapping sentence combinations for alignment:
+
+```bash
+for file in seg_texts/*.txt; do
+    base=$(basename "$file" .txt)
+    ./vecalign/overlap.py -i "$file" -o "overlaps/${base}_overlap.txt" -n 10
+done
+```
+
+#### 3. Generate Sentence Embeddings
+
+Create embeddings using LaBSE model:
+
+```bash
+python embed_overlaps.py
+```
+
+#### 4. Run Sentence Alignment
+
+Align English and target language texts. For example:
+
+```bash
+vecalign/vecalign.py --alignment_max_size 8 \
+    --src seg_texts/en_gutenburg.txt \
+    --tgt seg_texts/fr_gilbert_duvivier.txt \
+    --src_embed overlaps/en_gutenburg_overlap embed/en_gutenburg.emb \
+    --tgt_embed overlaps/fr_gilbert_duvivier_overlap embed/fr_gilbert_duvivier.emb \
+    --print_aligned_text > output.txt
+```
+
+#### 5. Extract Aligned Sentences
+
+Extract aligned sentence pairs into separate files:
+
+```bash
+python extract_aligned_files.py
+```
+
+### Training IBM Models
+
+#### IBM Model 1
 
 ```bash
 python run-ibm1.py
 ```
 
-### Training IBM Model 2
+#### IBM Model 2
 
 ```bash
 python run-ibm2.py
 ```
 
-### Extracting Word Contexts
+### Analysis
+
+Extract word contexts and analyze translations:
 
 ```bash
 python extract_word_contexts.py
@@ -52,10 +106,9 @@ python extract_word_contexts.py
 - **IBM Model Implementation**: Based on code from [daandouwe/IBM-Models](https://github.com/daandouwe/IBM-Models)
   - Original authors: Daan van Stigt, Fije van Overeem, and Tim van Elsloo
   - Adapted for literary translation analysis
-- **Sentence Alignment**: Using [bleualign](https://github.com/rsennrich/Bleualign) for preprocessing
-  - Sennrich, Rico and Martin Volk (2010): MT-based Sentence Alignment for OCR-generated Parallel Texts
-  - Script I used:
-  ```python  bleualign/bleualign.py -s jane-eyre/french/Fr_1964_Maurat.e -t jane-eyre/french/Fr_1964_Maurat.f -o Fr_1964_Maurat_aligned --galechurch --srctotarget```
+- **Sentence Alignment**: Using [vecalign](https://github.com/thompsonb/vecalign) for multilingual sentence alignment
+  - Thompson, Brian and Philipp Koehn (2019): Vecalign: Improved Sentence Alignment in Linear Time and Space
+  - Achieves better alignment quality using multilingual sentence embeddings (LaBSE)
 
 ## Requirements
 
@@ -64,6 +117,7 @@ pip install numpy
 pip install matplotlib
 pip install tabulate
 pip install progressbar2
+pip install sentence-transformers
 ```
 
 ## License

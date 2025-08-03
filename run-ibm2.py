@@ -8,8 +8,8 @@ def main():
 
 	ibm = IBM2()
 
-	english_path = 'jane-eyre/french/fr_combined_aligned.e'
-	french_path = 'jane-eyre/french/fr_combined_aligned.f'
+	english_path = 'jane-eyre/french/fr_combined_aligned.e.tokenized'
+	french_path = 'jane-eyre/french/fr_combined_aligned.f.tokenized'
 
 	ibm.read_data(english_path, french_path, null=True,  UNK=True, max_sents=np.inf, random_init=False, test_repr=False)
 	ibm.load_t('jane-eyre/models/IBM1/EM/20-')

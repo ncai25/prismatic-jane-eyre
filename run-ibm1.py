@@ -6,8 +6,8 @@ def main():
 
     ibm = IBM1()
 
-    english_path = 'jane-eyre/french/fr_combined_aligned.e'
-    french_path = 'jane-eyre/french/fr_combined_aligned.f'
+    english_path = 'jane-eyre/french/fr_combined_aligned.e.tokenized'
+    french_path = 'jane-eyre/french/fr_combined_aligned.f.tokenized'
 
     ibm.read_data(english_path, french_path, null=True, UNK=True, max_sents=np.inf, test_repr=False)
 
