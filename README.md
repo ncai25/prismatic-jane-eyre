@@ -1,10 +1,6 @@
 # Prismatic Jane Eyre - IBM Translation Models
 
-This project applies IBM Models 1 and 2 to analyze translations of Charlotte Brontë's _Jane Eyre_ across multiple languages, focusing on how key words and phrases evolve across different translations.
-
-## Project Overview
-
-Using statistical word alignment models, this project examines French and Italian translations of _Jane Eyre_ to trace how specific words and their contexts change across different translators and time periods. The goal is to provide computational support for literary translation analysis.
+This project applies IBM Models 1 and 2 to analyze translations of Charlotte Brontë's _Jane Eyre_, tracing how key words and phrases evolve across different French and Italian translations from various time periods (1854-2014). The goal is to provide computational support for literary translation analysis using statistical word alignment models.
 
 ## Data
 
@@ -16,16 +12,13 @@ The Jane Eyre translation corpus includes:
 
 ## Implementation
 
+### Sentence Alignment with Vecalign
+
+This project uses [vecalign](https://github.com/thompsonb/vecalign) during preprocessing for high-quality sentence alignment between source and target texts. Vecalign leverages multilingual sentence embeddings (LaBSE) to achieve better alignment quality before applying IBM Models for word-level analysis.
+
 ### IBM Models
 
-This implementation builds upon code from [IBM-Models by daandouwe](https://github.com/daandouwe/IBM-Models), originally developed for the UvA NLP2 course. The models have been adapted for literary text analysis.
-
-### Key Features
-
-- IBM Model 1 and 2 implementation with EM parameter estimation
-- Word pair extraction with probability thresholds
-- Context extraction for translation analysis
-- Visualization of alignment probabilities
+This implementation builds upon code from [IBM-Models by daandouwe](https://github.com/daandouwe/IBM-Models), originally developed for the UvA NLP2 course. The models have been adapted for literary text analysis, featuring IBM Model 1 and 2 implementation with EM parameter estimation.
 
 ## Usage
 
