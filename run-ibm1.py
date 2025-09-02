@@ -6,8 +6,8 @@ def main():
 
     ibm = IBM1()
 
-    english_path = 'jane-eyre/french/fr_combined_aligned.e.tokenized'
-    french_path = 'jane-eyre/french/fr_combined_aligned.f.tokenized'
+    english_path = 'preprocess/tokenized/en_gilbert_duvivier_tokenized.txt'
+    french_path = 'preprocess/tokenized/fr_gilbert_duvivier_tokenized.txt'
 
     ibm.read_data(english_path, french_path, null=True, UNK=True, max_sents=np.inf, test_repr=False)
 
@@ -18,9 +18,9 @@ def main():
     for step in range(T):
         print('Iteration {}'.format(step + 1))
 
-        save_path = 'jane-eyre/likelihoods/IBM1/EM/'
-        model_path = 'jane-eyre/models/IBM1/EM/{0}-'.format(step + 1)
-        word_pair_path = 'jane-eyre/word_pairs/IBM1/'
+        save_path = 'ibm_model/likelihoods/IBM1/EM/'
+        model_path = 'ibm_model/models/IBM1/EM/{0}-'.format(step + 1)
+        word_pair_path = 'ibm_model/word_pairs/IBM1/'
 
         ibm.epoch(log=True)
 
