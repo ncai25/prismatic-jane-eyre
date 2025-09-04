@@ -8,5 +8,8 @@ preprocess/embed
 preprocess/outputs
 preprocess/overlaps
 preprocess/word_pairs
+preprocess/seg_texts
+preprocess/tightened_fr
+preprocess/aligned_outputs
 .vscode
 /misc

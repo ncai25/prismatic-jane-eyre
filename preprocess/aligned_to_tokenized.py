@@ -3,38 +3,52 @@ from spacy.lang.en import English
 from spacy.lang.fr import French
 from pathlib import Path
 
-def strip_attached_punctuation(token_text):
-    """
-    Strip punctuation from the beginning and end of a token,
-    but only if the token contains alphabetic characters.
-    This preserves standalone punctuation tokens.
-    """
-    # If token is purely punctuation, keep it as is
+def process_token(token_text):
+    """Keep only tokens with letters, preserve contractions but remove attached punctuation."""
+    # Only keep tokens that contain at least one letter
     if not any(c.isalpha() for c in token_text):
-        return token_text
+        return ""
     
-    # If token contains alphabetic characters, strip punctuation from edges
-    # Strip from the beginning
-    start_idx = 0
-    for i, char in enumerate(token_text):
-        if char.isalpha() or char == '-':  # Keep hyphens within words
-            start_idx = i
-            break
+    import re
+    # For contractions, keep the apostrophe
+    if "'" in token_text and re.search(r"\w'\w", token_text):
+        # Remove leading/trailing punctuation except apostrophes in contractions
+        cleaned = re.sub(r'^[^\w\']+|[^\w\']+$', '', token_text)
+    else:
+        # For regular words, remove ALL leading and trailing punctuation
+        cleaned = re.sub(r'^[^\w]+|[^\w]+$', '', token_text)
     
-    # Strip from the end
-    end_idx = len(token_text)
-    for i in range(len(token_text) - 1, -1, -1):
-        if token_text[i].isalpha() or (i > 0 and token_text[i] == '-' and i < len(token_text) - 1):
-            end_idx = i + 1
-            break
-    
-    return token_text[start_idx:end_idx]
+    if cleaned and any(c.isalpha() for c in cleaned):
+        return cleaned.lower()
+    return ""
 
-def tokenize_file(input_path, output_path, nlp):
+def preprocess_french(text):
+    """Join hyphenated forms in French text."""
+    import re
+    # Fix apostrophe contractions: l' → l', d' → d', qu' → qu'
+    text = re.sub(r"(\w)'\s+", r"\1'", text)  
+    # Fix hyphenated verb forms: -je, -il, -elle, -ce, -t-
+    text = re.sub(r'\s+-\s*', r'-', text)  # Remove spaces around hyphens
+    text = re.sub(r'\s*-\s+', r'-', text)  # Handle any remaining patterns
+    return text
+
+def preprocess_english(text):
+    """Join contractions and hyphenated words in English text."""
+    import re
+    # Remove em dashes (--) entirely
+    text = re.sub(r'--+', ' ', text)
+    # Fix contractions: do n't → don't, wo n't → won't, etc.
+    text = re.sub(r"(\w)\s+n't", r"\1n't", text)
+    # Fix other contractions: I 'm → I'm, he 's → he's, etc.
+    text = re.sub(r"(\w)\s+'([a-z]+)", r"\1'\2", text)
+    # Fix hyphenated words: drawing - room → drawing-room
+    text = re.sub(r'(\w)\s+-\s+(\w)', r'\1-\2', text)
+    return text
+
+def tokenize_file(input_path, output_path, nlp, is_french=False, is_english=False):
     """
     Tokenize a file while maintaining sentence alignment.
-    Strips attached punctuation from words but keeps standalone punctuation tokens.
-    Converts to lowercase.
+    Removes pure punctuation, preserves contractions, converts to lowercase.
     """
     print(f"Processing {input_path}...")
     with open(input_path, 'r', encoding='utf-8') as infile, \
@@ -43,17 +57,18 @@ def tokenize_file(input_path, output_path, nlp):
         for i, line in enumerate(infile, 1):
             line = line.strip()
             
-            # Use spaCy's default tokenizer
+            if is_french:
+                line = preprocess_french(line)
+            elif is_english:
+                line = preprocess_english(line)
+            
             doc = nlp(line)
             
             tokens = []
             for token in doc:
-                # Strip attached punctuation from the token
-                cleaned_token = strip_attached_punctuation(token.text)
-                
-                # If after stripping we still have content, keep it
-                if cleaned_token:
-                    tokens.append(cleaned_token.lower())
+                processed = process_token(token.text)
+                if processed:
+                    tokens.append(processed)
             
             tokenized_line = ' '.join(tokens)
             outfile.write(tokenized_line + '\n')
@@ -61,42 +76,29 @@ def tokenize_file(input_path, output_path, nlp):
     print(f"  Completed! Total lines: {i}")
 
 def main():
-    # Just use the default tokenizers
     nlp_en = English()
     nlp_fr = French()
+    
+    from spacy.tokenizer import Tokenizer
+    nlp_en.tokenizer = Tokenizer(nlp_en.vocab)
+    nlp_fr.tokenizer = Tokenizer(nlp_fr.vocab)
     
     aligned_text_dir = Path("preprocess/aligned_outputs")
     tokenized_dir = Path("preprocess/tokenized")
     tokenized_dir.mkdir(exist_ok=True)
-    
-    # Test examples to verify behavior
-    print("\nTesting French tokenization:")
-    test_sentences = [
-        "« Que Bessie me reproche-t-elle ? demandai-je.",
-        "J'en étais ravie.",
-        "Mrs. Reed déjeunait tôt)",
-    ]
-    
-    for sent in test_sentences:
-        doc = nlp_fr(sent)
-        tokens = []
-        for token in doc:
-            cleaned = strip_attached_punctuation(token.text)
-            if cleaned:
-                tokens.append(cleaned.lower())
-        print(f"  Input: {sent}")
-        print(f"  Output: {' '.join(tokens)}\n")
-    
+
     tokenize_file(
-        aligned_text_dir / "en_jean_aligned.txt",
-        tokenized_dir / "en_jean_tokenized.txt",
-        nlp_en
+        aligned_text_dir / "en_souvestre_aligned.txt",
+        tokenized_dir / "en_souvestre_tokenized.txt",
+        nlp_en,
+        is_english=True
     )
     
     tokenize_file(
-        aligned_text_dir / "fr_jean_aligned.txt",
-        tokenized_dir / "fr_jean_tokenized.txt",
-        nlp_fr
+        aligned_text_dir / "fr_souvestre_aligned.txt",
+        tokenized_dir / "fr_souvestre_tokenized.txt",
+        nlp_fr,
+        is_french=True
     )
         
 if __name__ == "__main__":

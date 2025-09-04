@@ -1,13 +1,13 @@
 from lib.IBM1 import IBM1
-from lib.util import write_list, read_list, draw_weighted_alignment, plot_aer, save_word_pairs
+from lib.util import write_list, save_word_pairs
 import numpy as np
 
 def main():
 
     ibm = IBM1()
 
-    english_path = 'preprocess/tokenized/en_gilbert_duvivier_tokenized.txt'
-    french_path = 'preprocess/tokenized/fr_gilbert_duvivier_tokenized.txt'
+    english_path = 'preprocess/tokenized/en_tokenized_all.txt'
+    french_path = 'preprocess/tokenized/fr_tokenized_all.txt'
 
     ibm.read_data(english_path, french_path, null=True, UNK=True, max_sents=np.inf, test_repr=False)
 

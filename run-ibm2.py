@@ -1,6 +1,5 @@
 from lib.IBM2 import IBM2
-from lib.util import write_list, read_list, draw_weighted_alignment, plot_aer, plot_jump, save_word_pairs
-from lib.aer_import import test
+from lib.util import write_list, plot_jump, save_word_pairs
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -8,12 +7,12 @@ def main():
 
 	ibm = IBM2()
 
-	english_path = 'jane-eyre/french/fr_combined_aligned.e.tokenized'
-	french_path = 'jane-eyre/french/fr_combined_aligned.f.tokenized'
+	english_path = 'preprocess/tokenized/en_tokenized_all.txt'
+	french_path = 'preprocess/tokenized/fr_tokenized_all.txt'
 
 	ibm.read_data(english_path, french_path, null=True,  UNK=True, max_sents=np.inf, random_init=False, test_repr=False)
-	ibm.load_t('jane-eyre/models/IBM1/EM/20-')
-
+	ibm.load_t('ibm_model/models/IBM1/EM/20-')
+	
 	print(np.sum(ibm.t))
 
 	Save = True
@@ -24,9 +23,10 @@ def main():
 		
 		print('Iteration {}'.format(step+1))
 
-		save_path 		= 'jane-eyre/likelihoods/IBM2/pretrained-init/'
-		model_path 		= 'jane-eyre/models/IBM2/pretrained-init/{0}-'.format(step+1)
-		word_pair_path = 'jane-eyre/word_pairs/IBM2/'
+
+		save_path 	   = 'ibm_model/likelihoods/IBM2/pretrained-init/'
+		model_path 	   = 'ibm_model/models/IBM2/pretrained-init/{0}-'.format(step+1)
+		word_pair_path = 'ibm_model/word_pairs/IBM2/'
 		
 		ibm.epoch(log=True)
 		if Save:		
